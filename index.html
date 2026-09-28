@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>V. Keerthan Raghu Ram — Electronics & Energy Engineer</title>
+<meta name="description" content="V. Keerthan Raghu Ram — Electronics & Communication engineer. Piezoelectric energy harvesting, Edge AI, TinyML, embedded systems. Proddatur, Kadapa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --carbon:#0B0D0B;
+  --panel:#10130F;
+  --line:rgba(232,234,226,.10);
+  --line-strong:rgba(232,234,226,.22);
+  --ink:#E8EAE2;
+  --ink-dim:rgba(232,234,226,.55);
+  --ink-faint:rgba(232,234,226,.32);
+  --charge:#C6FF3D;
+  --charge-dim:rgba(198,255,61,.14);
+  --amber:#FFB347;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --disp:'Syne',sans-serif;
+  --max:1200px;
+  --pad:clamp(20px,5vw,64px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--carbon);
+  color:var(--ink);
+  font-family:var(--disp);
+  font-weight:400;
+  line-height:1.55;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--charge);color:#0B0D0B}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--carbon)}
+::-webkit-scrollbar-thumb{background:#24281F;border:2px solid var(--carbon);border-radius:6px}
+::-webkit-scrollbar-thumb:hover{background:var(--charge)}
+
+/* ---------- atmosphere ---------- */
+.grain{
+  position:fixed;inset:0;z-index:50;pointer-events:none;opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.gridbg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 20%,#000 0%,transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 20%,#000 0%,transparent 78%);
+}
+main{position:relative;z-index:1}
+
+/* ---------- rails ---------- */
+.rail{
+  position:fixed;left:0;top:0;bottom:0;width:56px;z-index:40;
+  border-right:1px solid var(--line);
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:32px;
+}
+.rail span{
+  writing-mode:vertical-rl;
+  font-family:var(--mono);font-size:10px;letter-spacing:.35em;
+  color:var(--ink-faint);text-transform:uppercase;
+}
+@media(max-width:900px){.rail{display:none}}
+
+/* ---------- charge meter (signature) ---------- */
+.meter{
+  position:fixed;right:24px;bottom:24px;z-index:60;
+  width:88px;height:88px;pointer-events:none;
+}
+.meter svg{width:100%;height:100%;transform:rotate(-90deg)}
+.meter .track{fill:none;stroke:rgba(232,234,226,.10);stroke-width:3}
+.meter .fill{
+  fill:none;stroke:var(--charge);stroke-width:3;stroke-linecap:round;
+  stroke-dasharray:226.19;stroke-dashoffset:226.19;
+  filter:drop-shadow(0 0 6px rgba(198,255,61,.55));
+  transition:stroke-dashoffset .18s ease-out;
+}
+.meter .pct{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+}
+.meter .pct b{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--charge);font-variant-numeric:tabular-nums}
+.meter .pct i{font-family:var(--mono);font-style:normal;font-size:7.5px;letter-spacing:.22em;color:var(--ink-faint);text-transform:uppercase;margin-top:2px}
+.meter.full .fill{stroke:#7CFF9B}
+@media(max-width:900px){.meter{right:14px;bottom:14px;width:68px;height:68px}.meter .pct b{font-size:13px}}
+
+/* ---------- topbar ---------- */
+.topbar{
+  position:fixed;top:0;left:0;right:0;z-index:45;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px var(--pad) 16px 72px;
+  mix-blend-mode:normal;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  background:linear-gradient(180deg,rgba(11,13,11,.82),rgba(11,13,11,0));
+}
+@media(max-width:900px){.topbar{padding-left:var(--pad)}}
+.topbar .sig{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11px;letter-spacing:.12em}
+.topbar .sig .dot{width:8px;height:8px;border-radius:50%;background:var(--charge);box-shadow:0 0 10px var(--charge);animation:beat 1.6s infinite}
+@keyframes beat{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(.72);opacity:.55}}
+.topbar nav{display:flex;gap:26px}
+.topbar nav a{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--ink-dim);text-decoration:none;transition:color .2s;
+}
+.topbar nav a:hover{color:var(--charge)}
+.topbar nav a b{color:var(--charge);font-weight:400;margin-right:3px}
+@media(max-width:760px){.topbar nav{display:none}}
+
+/* ---------- shared section chrome ---------- */
+section{padding:clamp(72px,10vw,128px) var(--pad)}
+.wrap{max-width:var(--max);margin:0 auto}
+.shead{display:flex;align-items:baseline;gap:20px;border-bottom:1px solid var(--line-strong);padding-bottom:18px;margin-bottom:clamp(36px,5vw,64px)}
+.shead .idx{font-family:var(--mono);font-size:12px;color:var(--charge);letter-spacing:.2em}
+.shead h2{font-size:clamp(28px,4.6vw,52px);font-weight:800;letter-spacing:-.02em;text-transform:uppercase}
+.shead .tag{margin-left:auto;font-family:var(--mono);font-size:10px;letter-spacing:.28em;color:var(--ink-faint);text-transform:uppercase;white-space:nowrap}
+@media(max-width:640px){.shead .tag{display:none}}
+
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s cubic-bezier(.22,.9,.3,1)}
+.reveal.in{opacity:1;transform:none}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}
+
+/* ---------- hero ---------- */
+.hero{
+  min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+  padding-top:96px;position:relative;overflow:hidden;
+}
+.hero .glow{
+  position:absolute;top:-22%;right:-12%;width:52vw;height:52vw;max-width:760px;max-height:760px;
+  background:radial-gradient(circle,rgba(198,255,61,.13) 0%,transparent 62%);
+  pointer-events:none;
+}
+.hero .klabel{
+  font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--ink-dim);display:flex;align-items:center;gap:14px;margin-bottom:28px;
+}
+.hero .klabel::before{content:'';width:44px;height:1px;background:var(--charge)}
+.hero h1{
+  font-size:clamp(52px,10.5vw,148px);
+  line-height:.94;font-weight:800;letter-spacing:-.03em;text-transform:uppercase;
+}
+.hero h1 .thin{display:block;color:transparent;-webkit-text-stroke:1.5px var(--ink-dim)}
+.hero h1 em{font-style:normal;color:var(--charge);position:relative;display:inline-block}
+.hero .sub{
+  margin-top:34px;display:flex;flex-wrap:wrap;gap:14px 34px;align-items:center;
+  font-family:var(--mono);font-size:12px;color:var(--ink-dim);letter-spacing:.06em;
+}
+.hero .sub b{color:var(--ink);font-weight:500}
+.hero .sub .loc::before{content:'◎ ';color:var(--charge)}
+.hero .sub a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--charge);padding-bottom:1px;transition:color .2s}
+.hero .sub a:hover{color:var(--charge)}
+
+.wave{position:absolute;left:0;right:0;bottom:-6px;height:110px;opacity:.9;pointer-events:none}
+.wave path{
+  fill:none;stroke:var(--charge);stroke-width:2;
+  stroke-dasharray:1400;stroke-dashoffset:1400;
+  filter:drop-shadow(0 0 8px rgba(198,255,61,.5));
+  animation:draw 3.2s .6s ease forwards, beatline 3.2s 3.9s linear infinite;
+}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes beatline{from{stroke-dashoffset:0}to{stroke-dashoffset:-1400}}
+
+/* ---------- marquee ---------- */
+.marquee{
+  border-top:1px solid var(--line-strong);border-bottom:1px solid var(--line-strong);
+  overflow:hidden;padding:16px 0;background:var(--panel);position:relative;z-index:1;
+}
+.marquee .track{display:flex;gap:48px;width:max-content;animation:slide 26s linear infinite}
+.marquee span{
+  font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--ink-dim);white-space:nowrap;
+}
+.marquee span::after{content:'⚡';color:var(--charge);margin-left:48px}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ---------- profile ---------- */
+.profile{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,5vw,80px);align-items:start}
+.profile .vig{position:relative;padding-top:26px}
+.profile .vig::before{content:'“';position:absolute;top:-18px;left:-8px;font-size:120px;line-height:1;color:var(--charge-dim);font-weight:800}
+.profile .vig p{font-size:clamp(19px,2.3vw,27px);line-height:1.5;font-weight:500}
+.profile .vig p b{color:var(--charge);font-weight:600}
+.profile .factlist{display:flex;flex-direction:column}
+.fact{
+  display:grid;grid-template-columns:110px 1fr;gap:16px;
+  padding:18px 0;border-bottom:1px solid var(--line);
+  font-size:14px;
+}
+.fact .k{font-family:var(--mono);font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-faint);padding-top:4px}
+.fact .v{color:var(--ink);font-weight:500}
+.fact .v small{display:block;color:var(--ink-dim);font-weight:400;font-size:12.5px;margin-top:2px}
+@media(max-width:860px){.profile{grid-template-columns:1fr}}
+
+/* ---------- education ---------- */
+.edrow{
+  display:grid;grid-template-columns:92px 1fr 190px 110px;gap:clamp(14px,3vw,34px);
+  align-items:baseline;
+  padding:clamp(22px,3vw,34px) 0;border-bottom:1px solid var(--line);
+  transition:background .25s,padding-left .25s;
+}
+.edrow:first-of-type{border-top:1px solid var(--line-strong)}
+.edrow:hover{background:var(--charge-dim);padding-left:10px}
+.edrow .yr{font-family:var(--mono);font-size:11px;color:var(--charge);letter-spacing:.14em}
+.edrow .deg{font-size:clamp(19px,2.4vw,27px);font-weight:700;letter-spacing:-.01em}
+.edrow .deg small{display:block;font-size:12.5px;font-weight:400;color:var(--ink-dim);margin-top:5px;letter-spacing:.02em}
+.edrow .ins{font-size:14px;color:var(--ink-dim)}
+.edrow .score{font-family:var(--mono);font-size:13px;text-align:right;color:var(--ink)}
+.edrow .score b{color:var(--charge);font-size:17px;font-weight:700}
+@media(max-width:720px){
+  .edrow{grid-template-columns:1fr auto;grid-template-areas:"yr score" "deg score2" "ins ins"}
+  .edrow .yr{grid-area:yr}.edrow .deg{grid-area:deg}.edrow .score{grid-area:score}
+  .edrow .score small{display:none}.edrow .ins{grid-area:ins}
+}
+
+/* ---------- project ---------- */
+.proj{border:1px solid var(--line-strong);background:linear-gradient(160deg,var(--panel),transparent 70%);position:relative}
+.proj::before,.proj::after{
+  content:'';position:absolute;width:14px;height:14px;border:2px solid var(--charge);
+}
+.proj::before{top:-7px;left:-7px;border-right:none;border-bottom:none}
+.proj::after{bottom:-7px;right:-7px;border-left:none;border-top:none}
+.proj .pbody{padding:clamp(28px,4vw,56px)}
+.proj .ptag{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--charge);margin-bottom:20px;display:flex;gap:12px;align-items:center}
+.proj .ptag::after{content:'';flex:0 0 60px;height:1px;background:var(--charge)}
+.proj h3{font-size:clamp(24px,3.4vw,42px);font-weight:800;letter-spacing:-.02em;line-height:1.12;margin-bottom:34px;text-transform:uppercase}
+.proj h3 span{color:var(--charge)}
+.steps{display:grid;gap:0;border-top:1px solid var(--line)}
+.step{display:grid;grid-template-columns:58px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--line)}
+.step .no{font-family:var(--mono);font-size:11px;color:var(--ink-faint);padding-top:4px}
+.step p{font-size:15.5px;color:var(--ink-dim);line-height:1.6}
+.step p b{color:var(--ink);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+.chip{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid var(--line-strong);padding:9px 15px;color:var(--ink-dim);
+  transition:.22s;cursor:default;
+}
+.chip:hover{border-color:var(--charge);color:var(--charge);background:var(--charge-dim);transform:translateY(-2px)}
+
+/* ---------- skills ---------- */
+.skills{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line-strong);border:1px solid var(--line-strong)}
+.scol{background:var(--carbon);padding:clamp(24px,3vw,40px);transition:background .3s}
+.scol:hover{background:var(--panel)}
+.scol .sh{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.scol .sh i{font-family:var(--mono);font-style:normal;font-size:10px;color:var(--charge);letter-spacing:.2em}
+.scol h4{font-size:16px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.scol .bar{height:3px;background:var(--line);margin:16px 0 22px;position:relative;overflow:hidden}
+.scol .bar::after{content:'';position:absolute;inset:0;background:var(--charge);transform:scaleX(0);transform-origin:left;transition:transform 1s .3s cubic-bezier(.2,.8,.2,1)}
+.scol.in .bar::after{transform:scaleX(1)}
+.scol ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+.scol li{font-size:14.5px;color:var(--ink-dim);display:flex;align-items:baseline;gap:10px}
+.scol li::before{content:'+ ';color:var(--charge);font-family:var(--mono)}
+.scol li b{color:var(--ink);font-weight:500}
+@media(max-width:820px){.skills{grid-template-columns:1fr}}
+
+/* ---------- creds ---------- */
+.creds{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.cred{
+  border:1px solid var(--line);padding:clamp(22px,3vw,32px);min-height:190px;
+  display:flex;flex-direction:column;position:relative;overflow:hidden;
+  transition:border-color .3s,transform .3s;background:var(--panel);
+}
+.cred:hover{border-color:var(--charge);transform:translateY(-4px)}
+.cred .stamp{
+  position:absolute;top:14px;right:14px;width:44px;height:44px;border:1px dashed var(--line-strong);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  transition:transform .5s cubic-bezier(.3,1.4,.4,1);
+}
+.cred:hover .stamp{transform:rotate(160deg)}
+.cred .stamp svg{width:18px;height:18px;stroke:var(--charge);fill:none;stroke-width:1.6}
+.cred .ctag{font-family:var(--mono);font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--charge);margin-bottom:14px;margin-top:4px}
+.cred h4{font-size:clamp(16px,1.8vw,20px);font-weight:700;line-height:1.3;letter-spacing:-.01em}
+.cred p{margin-top:auto;padding-top:20px;font-size:13px;color:var(--ink-dim)}
+.cred p b{color:var(--ink);font-weight:500}
+.cred.wide{grid-column:span 3;min-height:0;flex-direction:row;align-items:center;gap:clamp(20px,3vw,44px)}
+.cred.wide .stamp{position:static;flex:0 0 44px;margin-top:0}
+.cred.wide .ctag{margin:0;flex:0 0 auto}
+@media(max-width:820px){.creds{grid-template-columns:1fr}.cred.wide{grid-column:span 1;flex-direction:column;align-items:flex-start}}
+@media(min-width:560px) and (max-width:820px){.creds{grid-template-columns:1fr 1fr}.cred.wide{grid-column:span 2}}
+
+/* ---------- contact ---------- */
+.contact{text-align:left}
+.contact .big{
+  display:block;font-size:clamp(34px,6.4vw,84px);font-weight:800;text-transform:uppercase;
+  letter-spacing:-.02em;line-height:1.04;text-decoration:none;color:var(--ink);
+  transition:color .25s;word-break:break-all;
+}
+.contact .big:hover{color:var(--charge)}
+.contact .big em{font-style:normal;color:transparent;-webkit-text-stroke:1.5px var(--ink-dim)}
+.contact .grid{
+  margin-top:clamp(40px,5vw,64px);display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line-strong);border:1px solid var(--line-strong);
+}
+.contact .cell{background:var(--carbon);padding:26px;transition:background .3s}
+.contact .cell:hover{background:var(--panel)}
+.contact .cell .k{font-family:var(--mono);font-size:9px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:10px}
+.contact .cell .v{font-size:16px;font-weight:600;color:var(--ink);text-decoration:none}
+.contact .cell .v:hover{color:var(--charge)}
+.contact .acts{margin-top:30px;display:flex;flex-wrap:wrap;gap:14px}
+.btn{
+  font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+  padding:15px 28px;border:1px solid var(--charge);color:var(--charge);background:transparent;
+  cursor:pointer;text-decoration:none;display:inline-block;transition:.25s;
+}
+.btn:hover{background:var(--charge);color:#0B0D0B;box-shadow:0 0 28px rgba(198,255,61,.35)}
+.btn.ghost{border-color:var(--line-strong);color:var(--ink-dim)}
+.btn.ghost:hover{background:var(--ink);border-color:var(--ink);color:#0B0D0B;box-shadow:none}
+@media(max-width:720px){.contact .grid{grid-template-columns:1fr}}
+
+/* ---------- footer ---------- */
+footer{
+  border-top:1px solid var(--line);padding:28px var(--pad) 40px;
+  display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;
+}
+footer .sig2{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--ink-faint);text-transform:uppercase}
+footer .sig2 b{color:var(--charge);font-weight:400}
+footer .made{font-family:var(--mono);font-size:10px;color:var(--ink-faint);letter-spacing:.14em}
+
+/* ---------- print ---------- */
+@media print{
+  .rail,.meter,.marquee,.wave,.grain,.gridbg,.btn{display:none!important}
+  body{background:#fff;color:#111}
+  section{padding:28px 0}
+  .shead h2,.hero h1,.contact .big{color:#111}
+  .hero h1 .thin,.contact .big em{-webkit-text-stroke:0;color:#111}
+}
+</style>
+</head>
+<body>
+
+<div class="gridbg"></div>
+<div class="grain"></div>
+<aside class="rail"><span>KEERTHAN · RAGHU · RAM · EST. 2004 · PNDR · KDP</span></aside>
+
+<div class="meter" id="meter" aria-hidden="true">
+  <svg viewBox="0 0 88 88">
+    <circle class="track" cx="44" cy="44" r="36"></circle>
+    <circle class="fill" id="meterFill" cx="44" cy="44" r="36"></circle>
+  </svg>
+  <div class="pct"><b id="meterPct">0%</b><i>charge</i></div>
+</div>
+
+<header class="topbar">
+  <div class="sig"><span class="dot"></span>KRR · ECC-2027</div>
+  <nav>
+    <a href="#profile"><b>01</b>Profile</a>
+    <a href="#education"><b>02</b>Education</a>
+    <a href="#project"><b>03</b>System</a>
+    <a href="#skills"><b>04</b>Skills</a>
+    <a href="#credits"><b>05</b>Credits</a>
+    <a href="#contact"><b>06</b>Contact</a>
+  </nav>
+</header>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="glow"></div>
+    <div class="wrap">
+      <p class="klabel reveal in">Output: Electronics & Communication · Class of 2027</p>
+      <h1 class="reveal d1">V. Keerthan<br><span class="thin">Raghu Ram</span></h1>
+      <div class="sub reveal d2">
+        <span class="loc"><b>Proddatur, Kadapa</b> · India</span>
+        <span><b>Status:</b> Open to opportunities</span>
+        <a href="tel:+917901494048">+91 79014 94048</a>
+      </div>
+    </div>
+    <svg class="wave" viewBox="0 0 1400 110" preserveAspectRatio="none">
+      <path d="M0,60 L420,60 L450,60 L465,26 L480,90 L495,10 L510,86 L525,44 L540,66 L555,58 L900,58 L930,58 L945,30 L960,80 L975,16 L990,88 L1005,46 L1020,62 L1035,59 L1400,59"></path>
+    </svg>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee" aria-hidden="true">
+    <div class="track">
+      <span>Piezoelectric Energy Harvesting</span><span>MPPT Optimization</span><span>Edge AI</span><span>TinyML</span><span>Embedded Systems</span><span>Predictive Sensor Health</span><span>Python</span><span>C Programming</span>
+      <span>Piezoelectric Energy Harvesting</span><span>MPPT Optimization</span><span>Edge AI</span><span>TinyML</span><span>Embedded Systems</span><span>Predictive Sensor Health</span><span>Python</span><span>C Programming</span>
+    </div>
+  </div>
+
+  <!-- 01 PROFILE -->
+  <section id="profile">
+    <div class="wrap">
+      <div class="shead reveal"><span class="idx">01</span><h2>Profile</h2><span class="tag">Input / Objective</span></div>
+      <div class="profile">
+        <div class="vig reveal">
+          <p>To start my career in a reputed organization where I can use my <b>knowledge and skills</b>, learn new things, <b>take on responsibilities</b>, and contribute directly to the growth of the organization.</p>
+        </div>
+        <div class="factlist reveal d1">
+          <div class="fact"><span class="k">Name</span><span class="v">V. Keerthan Raghu Ram</span></div>
+          <div class="fact"><span class="k">Base</span><span class="v">Proddatur, Kadapa District <small>Andhra Pradesh, India</small></span></div>
+          <div class="fact"><span class="k">Discipline</span><span class="v">B.Tech — Electronics & Communication</span></div>
+          <div class="fact"><span class="k">Focus</span><span class="v">Energy systems · Edge AI · Embedded hardware <small>available via email / phone</small></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 EDUCATION -->
+  <section id="education">
+    <div class="wrap">
+      <div class="shead reveal"><span class="idx">02</span><h2>Education</h2><span class="tag">Supply voltage: rising</span></div>
+      <div class="reveal d1">
+        <div class="edrow">
+          <span class="yr">2023–27</span>
+          <span class="deg">B.Tech · Electronics & Communication<small>Sri Venkateshwara College of Engineering (SVCE)</small></span>
+          <span class="ins">Undergraduate</span>
+          <span class="score"><b>7.6</b> CGPA<small style="color:var(--ink-faint)"> / 10</small></span>
+        </div>
+        <div class="edrow">
+          <span class="yr">2021–23</span>
+          <span class="deg">Intermediate<small>Narayana Junior College</small></span>
+          <span class="ins">MPC stream</span>
+          <span class="score"><b>82</b>%</span>
+        </div>
+        <div class="edrow">
+          <span class="yr">2021</span>
+          <span class="deg">SSC<small>Gautham High School</small></span>
+          <span class="ins">Secondary education</span>
+          <span class="score"><b>10</b> CGPA</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 PROJECT -->
+  <section id="project">
+    <div class="wrap">
+      <div class="shead reveal"><span class="idx">03</span><h2>Flagship System</h2><span class="tag">Field: Energy Harvesting</span></div>
+      <div class="proj reveal d1">
+        <div class="pbody">
+          <p class="ptag">SYS-01 · Piezoelectric</p>
+          <h3>AI-Enabled Footstep <span>Energy Harvesting</span> System</h3>
+          <div class="steps">
+            <div class="step"><span class="no">03.1</span><p><b>Harness</b> — converts footstep pressure into usable electrical energy through an array of piezoelectric sensors.</p></div>
+            <div class="step"><span class="no">03.2</span><p><b>Optimize</b> — MPPT-based control maximizes collection efficiency and regulates battery charging.</p></div>
+            <div class="step"><span class="no">03.3</span><p><b>Predict</b> — AI-driven sensor health monitoring detects probable sensor faults and keeps the array reliable over time.</p></div>
+            <div class="step"><span class="no">03.4</span><p><b>Store</b> — harvested energy is banked into a battery reserve for later use.</p></div>
+          </div>
+          <div class="chips">
+            <span class="chip">Piezoelectric Array</span>
+            <span class="chip">MPPT</span>
+            <span class="chip">Predictive Health Monitoring</span>
+            <span class="chip">Battery Storage</span>
+            <span class="chip">Embedded Control</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 SKILLS -->
+  <section id="skills">
+    <div class="wrap">
+      <div class="shead reveal"><span class="idx">04</span><h2>Skill Matrix</h2><span class="tag">Channels: 3</span></div>
+      <div class="skills">
+        <div class="scol reveal">
+          <div class="sh"><i>04.1</i><h4>Core</h4></div>
+          <div class="bar"></div>
+          <ul>
+            <li><b>Python</b> — scripting & AI tooling</li>
+            <li><b>C</b> — low-level embedded logic</li>
+          </ul>
+        </div>
+        <div class="scol reveal d1">
+          <div class="sh"><i>04.2</i><h4>Hardware</h4></div>
+          <div class="bar"></div>
+          <ul>
+            <li><b>Embedded Systems</b> — foundations</li>
+            <li><b>Edge AI & TinyML</b> — on-device intelligence</li>
+          </ul>
+        </div>
+        <div class="scol reveal d2">
+          <div class="sh"><i>04.3</i><h4>Human</h4></div>
+          <div class="bar"></div>
+          <ul>
+            <li><b>Communication</b> — clear, direct</li>
+            <li><b>Time Management</b> — on schedule</li>
+            <li><b>Teamwork</b> — reliable contributor</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 CERTS & INTERNSHIP -->
+  <section id="credits">
+    <div class="wrap">
+      <div class="shead reveal"><span class="idx">05</span><h2>Credits</h2><span class="tag">Certified & field-tested</span></div>
+      <div class="creds">
+        <div class="cred reveal">
+          <div class="stamp"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 7.7l5.4-.8z"/></svg></div>
+          <span class="ctag">Certification</span>
+          <h4>Python using AI — AI for Techies</h4>
+          <p><b>Issued:</b> AI FOR TECHIES<br>Python programming accelerated with AI-assisted workflows.</p>
+        </div>
+        <div class="cred reveal d1">
+          <div class="stamp"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4L4.2 7.7l5.4-.8z"/></svg></div>
+          <span class="ctag">Certification</span>
+          <h4>Edge AI & TinyML</h4>
+          <p><b>Focus:</b> On-device machine learning<br>Deploying compact models on embedded hardware.</p>
+        </div>
+        <div class="cred wide reveal d2">
+          <div class="stamp"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
+          <span class="ctag">Internship</span>
+          <h4>Embedded Systems — Youngminds Technology Solutions Pvt. Ltd.</h4>
+          <p>Hands-on industry training in embedded development: microcontrollers, peripherals, and real project practice.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 CONTACT -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <div class="shead reveal"><span class="idx">06</span><h2>Contact</h2><span class="tag">Potential: fully charged</span></div>
+      <a class="big reveal d1" href="mailto:keerthanraghuram56@gmail.com">keerthanraghuram56<em>@gmail.com</em></a>
+      <div class="grid reveal d2">
+        <div class="cell"><span class="k">Phone</span><a class="v" href="tel:+917901494048">+91 79014 94048</a></div>
+        <div class="cell"><span class="k">Location</span><span class="v">Proddatur, Kadapa — AP, India</span></div>
+        <div class="cell"><span class="k">Availability</span><span class="v">Open to roles & internships</span></div>
+      </div>
+      <div class="acts reveal d3">
+        <a class="btn" href="mailto:keerthanraghuram56@gmail.com">Get in touch ↗</a>
+        <button class="btn ghost" onclick="window.print()">Save as PDF ⤓</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span class="sig2">© 2026 · V. Keerthan Raghu Ram · <b>PNDR</b></span>
+  <span class="made">Energy in → Knowledge out</span>
+</footer>
+
+<script>
+(function(){
+  var fill=document.getElementById('meterFill'),pct=document.getElementById('meterPct'),box=document.getElementById('meter');
+  var C=226.19,min=1101;
+  function onScroll(){
+    var h=document.documentElement,max=h.scrollHeight-min;
+    var y=window.scrollY||h.scrollTop||0;
+    var p=max>0?Math.min(Math.max(y/max,0),1):0;
+    fill.style.strokeDashoffset=(C*(1-p)).toFixed(2);
+    var v=Math.round(p*100);
+    pct.textContent=v+'%';
+    if(v>=99){box.classList.add('full');pct.textContent='100%';}else{box.classList.remove('full');}
+  }
+  document.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}});
+  },{threshold:.12,rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('.reveal,.scol').forEach(function(el){io.observe(el);});
+})();
+</script>
+</body>
+</html>
